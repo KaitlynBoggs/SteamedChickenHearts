@@ -1,11 +1,384 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firesaltfishflakes</title>
-</head>
-<body>
-  <h1>this is an amazing bowl of smoked chicken hearts.</h1>  
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Satanic Nightjar — Interactive Guide</title>
+  <meta name="description" content="A small interactive one-page site about the Satanic Nightjar with orange accents, facts, and subtle animations." />
+  <!-- Leaflet CSS for interactive map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Leaflet JS (must appear before our script so `L` is available) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script defer src="script.js"></script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <div class="wrap">
+        <h1 class="logo">Satanic Nightjar</h1>
+        <div class="controls">
+          <button id="accentToggle" class="btn" aria-pressed="false" title="Switch accent">
+            Orange accents
+          </button>
+
+          <div class="speech-controls">
+            <label class="visually-hidden" for="voiceSelect">Voice</label>
+            <select id="voiceSelect" aria-label="Voice selection"></select>
+
+            <label class="visually-hidden" for="voiceRate">Rate</label>
+            <input id="voiceRate" type="range" min="0.6" max="1.6" step="0.1" value="0.95" title="Speech rate" />
+
+            <button id="ttsPlay" class="btn" title="Play">🔊 Play</button>
+            <button id="ttsPause" class="btn" title="Pause">⏸ Pause</button>
+            <button id="ttsStop" class="btn" title="Stop">⏹ Stop</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="wrap hero-grid">
+          <div class="hero-left">
+            <figure class="hero-image">
+              <!-- external image provided by Cornell Lab (remote). If this remote image fails, the inline SVG fallback will display. -->
+              <img id="nightjarImg" src="https://i.pinimg.com/originals/c9/01/41/c90141f659eafa2142825304026d3904.jpg" alt="Satanic Nightjar photo (user provided)" crossorigin="anonymous" />
+
+              <!-- Inline SVG fallback shown when PNG is not available -->
+              <svg class="inline-svg" viewBox="0 0 400 400" role="img" aria-labelledby="nightjarTitle nightjarDesc">
+                <title id="nightjarTitle">Stylized Satanic Nightjar</title>
+                <desc id="nightjarDesc">A simple vector silhouette of a nightjar with subtle orange highlights.</desc>
+                <defs>
+                  <linearGradient id="njBg" x1="0" x2="1">
+                    <stop offset="0" stop-color="#07142a" />
+                    <stop offset="1" stop-color="#063a5e" />
+                  </linearGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#njBg)" rx="24" />
+                <g transform="translate(40,40) scale(1)">
+                  <path d="M200 90 C260 90 300 130 320 170 C300 210 260 230 200 230 C140 230 100 210 80 170 C100 130 140 90 200 90Z" fill="#2b2b2b" />
+                  <path class="wing" d="M60 170 C30 140 20 190 80 200 C120 205 110 170 60 170Z" fill="#3a3a3a" />
+                  <path class="wing" d="M340 170 C370 140 380 190 320 200 C280 205 290 170 340 170Z" fill="#3a3a3a" />
+                  <circle cx="230" cy="120" r="6" fill="#ff7a18" />
+                </g>
+              </svg>
+              <figcaption class="photo-credit">Image provided by user — <a href="https://i.pinimg.com/originals/c9/01/41/c90141f659eafa2142825304026d3904.jpg" target="_blank" rel="noopener">source</a>. Fallback SVG will appear if unavailable.</figcaption>
+            </figure>
+          </div>
+
+          <div class="hero-right">
+            <h2>Satanic Nightjar — a nocturnal caprimulgid</h2>
+            <p class="lede">A cryptic, nocturnal bird in the nightjar family (Caprimulgidae). Nightjars are masters of camouflage and insectivorous hunters of dusk and night.</p>
+            <p>
+              Explore the cards below to learn more. Tap or click cards on touch devices to flip and reveal details, or double-click to open expanded notes.
+            </p>
+            <p>
+              <a class="cta" href="#facts">See facts</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Distribution map (illustrative) -->
+      <section id="range" class="range">
+        <div class="wrap">
+          <h3>Distribution map</h3>
+          <p class="muted">Approximate, illustrative distribution for the Satanic Nightjar. For authoritative range maps consult field guides or biodiversity databases.</p>
+          <div id="map" role="region" aria-label="Illustrative distribution map of the Satanic Nightjar"></div>
+          <p class="photo-credit">Map tiles by <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a></p>
+        </div>
+      </section>
+
+      <section id="facts" class="facts">
+        <div class="wrap">
+          <h3>Quick facts about the Satanic Nightjar</h3>
+            <div class="controls-row">
+              <label class="search">
+                <span class="visually-hidden">Search facts</span>
+                <input id="factSearch" type="search" placeholder="Search facts (press / to focus)" aria-label="Search facts" />
+              </label>
+              <div class="inline-controls">
+                <button id="randomFactBtn" class="btn">Random fact</button>
+                <div class="progress" aria-hidden="true">
+                  <div id="progressFill" class="progress__fill" style="width:0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cards" id="cardsContainer">
+            <button class="card" data-fact="Nocturnal habits">
+              <div class="card__face card__face--front">
+                <strong>Nocturnal habits</strong>
+                <p>Active at dusk and night, hunting flying insects.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Nightjars forage silently for moths and other nocturnal insects using a wide gape and agile flight. They often perch low and sally out to catch prey.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Diet">
+              <div class="card__face card__face--front">
+                <strong>Diet</strong>
+                <p>Insectivorous — primarily moths and flying insects.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Their broad, bristle-fringed bills help trap insects in flight. Foraging peaks at dusk and into the night when insect activity is high.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Camouflage">
+              <div class="card__face card__face--front">
+                <strong>Camouflage</strong>
+                <p>Cryptic plumage blends with ground and leaf litter.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Nightjars rely on mottled browns, greys, and blacks to remain nearly invisible when resting during daylight on the ground or low branches.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Calls">
+              <div class="card__face card__face--front">
+                <strong>Calls</strong>
+                <p>Distinctive churring, whistles, or rasping calls at night.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Many nightjar species have characteristic vocalizations used for territorial defense and mate attraction—these are often a key way to detect them at night.</p>
+              </div>
+            </button>
+            <!-- Additional facts added -->
+            <button class="card" data-fact="Breeding">
+              <div class="card__face card__face--front">
+                <strong>Breeding</strong>
+                <p>Ground-nesters that lay camouflaged eggs.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Most nightjars lay 1–2 eggs directly on the ground without constructing a true nest; the eggs and chicks are cryptically colored to match their surroundings.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Range">
+              <div class="card__face card__face--front">
+                <strong>Range</strong>
+                <p>Nightjars occur worldwide in warm regions; ranges vary by species.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Specific distributions depend on the species; many are patchily distributed and favor open woodlands, scrub, and grasslands where insects are abundant.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Endemic to Sulawesi">
+              <div class="card__face card__face--front">
+                <strong>Endemic to Sulawesi</strong>
+                <p>The Satanic Nightjar is restricted to Sulawesi, Indonesia.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>This species is endemic to the island of Sulawesi — meaning it is found only there. Conservation efforts focus on maintaining its forest habitat within Sulawesi and monitoring local threats.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Lifespan">
+              <div class="card__face card__face--front">
+                <strong>Lifespan</strong>
+                <p>Many nightjar species can live several years in the wild.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Lifespan varies by species and threats; predation and habitat loss influence survival in the wild.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Threats">
+              <div class="card__face card__face--front">
+                <strong>Threats</strong>
+                <p>Habitat loss, light pollution, and insect declines.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Urbanization, pesticide use, and changes to open habitats reduce insect prey and nesting areas—threatening many nightjar populations.</p>
+              </div>
+            </button>
+          </div>
+          <!-- Myths & folklore about nightjars -->
+          <div class="myths">
+            <h3>Myths &amp; folklore</h3>
+            <div class="cards">
+              <button class="card" data-fact="Goatsucker myth">
+                <div class="card__face card__face--front">
+                  <strong>Goatsucker myth</strong>
+                  <p>Old belief that nightjars drank milk from goats at night.</p>
+                </div>
+                <div class="card__face card__face--back">
+                  <p>This myth (from Latin caprimulgus, "goat milker") likely arose from observing nightjars near livestock at dusk when insects were stirred up—there's no evidence they drink milk or harm livestock.</p>
+                </div>
+              </button>
+
+              <button class="card" data-fact="Omen of bad luck">
+                <div class="card__face card__face--front">
+                  <strong>Omen of bad luck</strong>
+                  <p>Nocturnal calls often linked to evil or omens in folklore.</p>
+                </div>
+                <div class="card__face card__face--back">
+                  <p>Many cultures attach supernatural meanings to night sounds. Nightjar calls were sometimes seen as omens, but these are cultural interpretations rather than facts about the bird.</p>
+                </div>
+              </button>
+
+              <button class="card" data-fact="Steals livestock">
+                <div class="card__face card__face--front">
+                  <strong>Steals or harms livestock</strong>
+                  <p>Some say nightjars harm young animals at night.</p>
+                </div>
+                <div class="card__face card__face--back">
+                  <p>Nightjars are insectivores and do not prey on livestock; this myth likely came from night activity around pastures where insects and small rodents are present.</p>
+                </div>
+              </button>
+
+              <button class="card" data-fact="Medicinal uses">
+                <div class="card__face card__face--front">
+                  <strong>Medicinal folklore</strong>
+                  <p>Some traditions attributed curative or magical properties to nightjar parts.</p>
+                </div>
+                <div class="card__face card__face--back">
+                  <p>Historic folk remedies sometimes used bird parts in rituals; modern conservation and ethics advise against using wild birds in such practices, and there's no scientific support for these remedies.</p>
+                </div>
+              </button>
+
+              <button class="card" data-fact="Can be tamed">
+                <div class="card__face card__face--front">
+                  <strong>Can be tamed as pets</strong>
+                  <p>Belief that nightjars can be kept as tame, nocturnal companions.</p>
+                </div>
+                <div class="card__face card__face--back">
+                  <p>Nightjars are wild, nocturnal birds with specialized diets and behaviors; they do not adapt well to captivity and should not be kept as pets. Many jurisdictions protect them by law.</p>
+                </div>
+              </button>
+            </div>
+          </div>
+            <!-- More facts -->
+            <button class="card" data-fact="Foraging strategy">
+              <div class="card__face card__face--front">
+                <strong>Foraging strategy</strong>
+                <p>Sallying flight from perches and continuous aerial hunting.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Nightjars often sit on low branches or the ground and sally out to snatch insects mid-air; some species also forage continuously while on the wing.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Migration">
+              <div class="card__face card__face--front">
+                <strong>Migration</strong>
+                <p>Some species are migratory, others resident.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Depending on species and region, nightjars may undertake long-distance migrations to follow seasonal insect availability, while others remain year-round in tropical habitats.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Sensory adaptations">
+              <div class="card__face card__face--front">
+                <strong>Sensory adaptations</strong>
+                <p>Wide gape, rictal bristles, and acute night vision.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Rictal bristles around the bill may help funnel insects; large eyes are adapted for low-light vision, aiding nocturnal hunting.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Territory">
+              <div class="card__face card__face--front">
+                <strong>Territory</strong>
+                <p>Territorial displays and vocal boundaries at night.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Many nightjars defend foraging and breeding territories using calls and aerial displays during the breeding season to deter rivals and attract mates.</p>
+              </div>
+            </button>
+
+            <!-- Related birds / comparisons -->
+            <button class="card" data-fact="Related: Common Nighthawk">
+              <div class="card__face card__face--front">
+                <strong>Common Nighthawk</strong>
+                <p>A related caprimulgid with crepuscular habits.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Common Nighthawks (Chordeiles minor) are fast, agile aerial insectivores seen at dusk over open areas; unlike many nightjars they are often active at dusk and in urban skies.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Related: Whip-poor-will">
+              <div class="card__face card__face--front">
+                <strong>Eastern Whip-poor-will</strong>
+                <p>Woodland nightjar known for its repetitive call.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Whip-poor-wills are forest-dwelling nightjars that sing repeatedly at night; their plumage and ground-nesting habits resemble other nightjar strategies but specialized to wooded habitats.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Related: Potoo">
+              <div class="card__face card__face--front">
+                <strong>Potoo</strong>
+                <p>Not a nightjar but a nocturnal cousin with unique posture.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Potoos (family Nyctibiidae) are related to nightjars and share nocturnal habits; they often perch upright and rely on camouflage, but their vocalizations and ecology differ markedly.</p>
+              </div>
+            </button>
+
+            <button class="card" data-fact="Related: Owlet-nightjar">
+              <div class="card__face card__face--front">
+                <strong>Owlet-nightjar</strong>
+                <p>Australasian nightjar-like relative with distinct nesting.</p>
+              </div>
+              <div class="card__face card__face--back">
+                <p>Owlet-nightjars (Aegotheles) are a separate family found in Australasia; while superficially similar, they have unique breeding habits and morphological traits that distinguish them from true nightjars.</p>
+              </div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modal for expanded fact details -->
+      <div id="factModal" class="modal" role="dialog" aria-hidden="true" aria-labelledby="modalTitle">
+          <div class="modal__panel">
+          <button class="modal__close btn" id="modalClose" aria-label="Close">✕</button>
+          <h4 id="modalTitle">Fact details</h4>
+          <div id="modalBody" class="modal__body" aria-live="polite"></div>
+          <div class="modal__nav">
+            <button id="modalPrev" class="btn">◀ Prev</button>
+            <button id="modalNext" class="btn">Next ▶</button>
+          </div>
+        </div>
+      </div>
+
+      <section class="extras">
+        <div class="wrap">
+          <h3>Interactive</h3>
+          <p>Click "Hear a fact" to have the page speak a random quick fact (uses your browser's speech synthesis).</p>
+          <div class="legend">
+            <span class="chip">Accent: <span id="accentSample" class="accent-swatch"></span></span>
+          </div>
+
+          <div class="audio-area">
+            <h4>Nightjar sounds</h4>
+            <p id="audioStatus">Loading recording (will try local copy then remote fallback)...</p>
+            <div class="audio-controls">
+              <button id="audioPlay" class="btn">▶ Play call</button>
+              <button id="audioPause" class="btn">⏸ Pause</button>
+              <button id="audioStop" class="btn">⏹ Stop</button>
+              <label class="visually-hidden" for="audioVolume">Volume</label>
+              <input id="audioVolume" type="range" min="0" max="1" step="0.05" value="1" title="Volume" />
+            </div>
+            <small class="photo-credit">Tip: add a field recording at <code>assets/nightjar-call.mp3</code> to play a local sample; otherwise the site will try a remote Freesound sample (Jonnosaurus, CC0) and fall back to speech synthesis.</small>
+          </div>
+        </div>
+      </section>
+  </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <small>Made with ♡ · Visual interactive micro-site about the Satanic Nightjar · Orange accents by design</small>
+      </div>
+    </footer>
+  </body>
 </html>
