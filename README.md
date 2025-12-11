@@ -4,7 +4,7 @@ This small single-page site highlights quick facts about the Satanic Nightjar (a
 
 How to view
 
-- Open in [Satanic Nightjar](https://github.com/KaitlynBoggs/SteamedChickenHearts) a browser (double-click or File → Open in browser). No server required (static site).
+- Open in [Satanic Nightjar](https://kaitlynboggs.github.io/SteamedChickenHearts/) a browser (double-click or File → Open in browser). No server required (static site).
 Features
 
 - Responsive layout with an SVG illustration.
