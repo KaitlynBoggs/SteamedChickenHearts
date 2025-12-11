@@ -4,13 +4,12 @@ This small single-page site highlights quick facts about the Satanic Nightjar (a
 
 How to view
 
-- Open `Index.html` in a browser (double-click or File → Open in browser). No server required (static site).
-
+- Open in [Satanic Nightjar](https://github.com/KaitlynBoggs/SteamedChickenHearts) a browser (double-click or File → Open in browser). No server required (static site).
 Features
 
 - Responsive layout with an SVG illustration.
 - Orange accent color scheme by default.
-- Click/tap fact cards to flip and reveal details.
+- Click/tap fact cards to [] and reveal details.
 - "Hear a fact" uses the browser's speech synthesis to read a random fact or the currently open detail in the modal.
 
 Related birds
